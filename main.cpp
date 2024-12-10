@@ -40,7 +40,7 @@ player p9;
     int l=0; //indexes lineup
    // int b; //indexes bases
     state();        //Constructor
-    void loadbat(); //load and declair batter
+    void loadBatter(); //load and declair batter
     void readbases();//to display the bases
     void run(); //for running
     void catches();//catching players or setting their desired bases
@@ -159,7 +159,7 @@ void state::defeat()
     cout << "You lose"<<endl;
     exit(0);
 };
-void state::loadbat()
+void state::loadBatter()
 {//load batter
 //cout<<l<<endl;
 base[0]=lineup[l];
@@ -259,10 +259,10 @@ int main() {
 state field;//creates the field
 int i;
 for (i = 0; i <11; i++) {
-field.loadbat();
+field.loadBatter();
 field.readbases();
 field.run();
-field.loadbat();
+field.loadBatter();
 field.readbases();
 field.walk();
 }
