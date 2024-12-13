@@ -48,9 +48,10 @@ player p9;
     void walk();//for taking the walk
     void inningchange(); //win or change inning
     void defeat(); //enemy runs enough to win
+    void pitchbat();
     
     //matrixes
-    int batskillmat[2][3][3] = 
+    int batskillmat[3][3][3] = 
     {//master array elements are chance thresholds: {strike/ball, ball/hit, hit/homerun} todo: add digit to chance for home run
         {// ground ball/bad throw
             {40, 80, 90}, //skill 0
@@ -61,8 +62,12 @@ player p9;
             {70, 80, 90}, //skill 0
             {30, 60, 90}, //skill 1
             {10, 50, 90} //skill 2
+        }, 
+        {//curve ball todo: update values
+            {70, 80, 90}, //skill 0
+            {30, 60, 90}, //skill 1
+            {10, 50, 90} //skill 2
         } 
-        //todo add curve ball
     };
     
     int runskillmat[4][2]=
@@ -139,9 +144,77 @@ lineup[0]=p1;lineup[1]=p2;lineup[2]=p3;lineup[3]=p4; //lineup
 lineup[4]=p5;lineup[5]=p6;lineup[6]=p7;lineup[7]=p8;lineup[8]=p9; 
 }
 int state::fate()
-{
+{//random number generator
     
      return (rand() % 100) + 1;
+};
+
+void state::pitchbat()//select pitch and determine batter response
+{
+    int pit;//pitch choice
+    int f; //fate
+    int a; //strike/ball threshold detrmined by the matrix
+    int b; //ball/hit threshold detrmined by the matrix
+    int c; //hit/home threshold detrmined by the matrix
+
+    //collect pitch choice
+    cout << "Choose your pitch: 0-ground 1-fast 2-curve"<< endl;
+    cin >> pit;
+
+    cout << "You chose: "<< pit << endl;//todo: use dictionary to print name of pitch
+
+    //replace invalid answers with 0
+    switch (pit) {
+  case 0:
+    break;
+  case 1:
+    break;
+  case 2:
+    break;
+  default:
+    cout << "Your pitcher didn't understand what you said and made a bad throw."<< endl;
+    pit=0;
+}
+    a=batskillmat[pit][base[0].bat][0];//load thresholds
+    b=batskillmat[pit][base[0].bat][1];
+    c=batskillmat[pit][base[0].bat][2];
+
+
+    //determine fate and compare to probability matrix
+    f=fate();
+
+    //conditional statement determining strike/ball/hit/hr based on fate
+    if (f<=a)
+    {//strike
+    cout<< "Strike"<< endl;
+    strikes++;
+    }
+    else if (f>a && f<=b)
+    {//ball
+      cout<< "ball"<< endl;
+      balls++;
+    }
+    else if (f>b && f<=c)
+    {//hit
+      cout<< "It's a hit!"<< endl;
+      run();
+    }
+    else
+    {//home run
+        cout<< "It's gone!"<< endl;
+        for (int i = 2; i >= 0; i--) {
+            if (base[i].name != "Nobody")//add a run for every real player
+            {
+                runs++;//add run
+                base[i]=p0;//empty base
+            };
+      
+        };
+        
+    }
+    
+    
+
 };
 void state::inningchange()
 {
@@ -154,11 +227,13 @@ void state::inningchange()
      exit(0);
   };
 };
+
 void state::defeat()
 {
     cout << "You lose"<<endl;
     exit(0);
 };
+
 void state::loadBatter()
 {//load batter
 //cout<<l<<endl;
@@ -168,11 +243,13 @@ l++;
     l=0;
     };
 };
+
 void state::readbases()
 {//displays the bases
     cout <<"Current field:"<< endl;
     cout << base[0].name<<", "<< base[1].name<<", "<< base[2].name<<", "<< base[3].name<< endl;
 };
+
 void state::catches()//determines who gets caught and eliminated from the field, if they don't get caught, set a basedesired
 {
     int f;
@@ -208,6 +285,7 @@ for (int i = 3; i >= 0; i--) {
 
     };
 };
+
 void state::run()//makes players run bases
 {
     int x;
@@ -240,6 +318,7 @@ for (int i = 3; i >= 0; i--) {
 //base[0+speedtest]=base[0];//one instance of a player running bases todo: import for loop from old code
 base[0]=p0;
 };
+
 void state::walk()//make players take the walk
 {
     cout<<base[0].name << " takes the walk."<<endl;
