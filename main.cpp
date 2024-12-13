@@ -48,7 +48,9 @@ player p9;
     void walk();//for taking the walk
     void inningchange(); //win or change inning
     void defeat(); //enemy runs enough to win
-    void pitchbat();
+    void pitchbat();//collects pitch and determines outcome of inidvidual swing
+    void out(); //send a player out and run innning change if 3
+
     
     //matrixes
     int batskillmat[3][3][3] = 
@@ -188,11 +190,29 @@ void state::pitchbat()//select pitch and determine batter response
     {//strike
     cout<< "Strike"<< endl;
     strikes++;
+      if (strikes==3)//if three strikes, out
+      {
+       cout<< base[0].name<<" strikes out!"<< endl;
+       outs++;
+        if (outs==3){//check for three outs
+          inningchange();//should either end the game or reset the inning
+        }
+        else
+        {
+          loadBatter();
+        };
+       balls=0; strikes=0; //reset swing outcomes
+      }
     }
     else if (f>a && f<=b)
     {//ball
       cout<< "ball"<< endl;
       balls++;
+      if (balls==4)//if four balls, take the walk
+      {
+        walk();
+        balls=0; strikes=0; //reset swing outcomes
+      }
     }
     else if (f>b && f<=c)
     {//hit
@@ -211,22 +231,22 @@ void state::pitchbat()//select pitch and determine batter response
       
         };
         
-    }
-    
-    
+    };
 
 };
-void state::inningchange()
+void state::inningchange()//reset game if tied or win game todo: move contents to condition in method "outs"
 {
   if (runs==1){//tie, reset game
-    cout<< "You tied, but they got another run next inning, new inning!"<<endl;
+    cout<< "You tied, but they got another run at the bottom of the inning, new inning!"<<endl;
     runs=0; outs=0; balls=0; strikes=0;//resets stats
+    base[0]=p0;base[1]=p0;base[2]=p0;base[3]=p0;//empty bases
   }
   else{
      cout<< "You win!"<<endl;
      exit(0);
   };
 };
+
 
 void state::defeat()
 {
@@ -337,13 +357,14 @@ void state::walk()//make players take the walk
 int main() {
 state field;//creates the field
 int i;
-for (i = 0; i <11; i++) {
-field.loadBatter();
-field.readbases();
-field.run();
-field.loadBatter();
-field.readbases();
-field.walk();
+for (i = 0; i <2; i++) {//todo: change to a while loop to referance a "game on" int within the class instance
+field.pitchbat();
+//field.loadBatter();
+//field.readbases();
+//field.run();
+//field.loadBatter();
+//field.readbases();
+//field.walk();
 }
     return 0;
 }
