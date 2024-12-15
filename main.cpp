@@ -330,11 +330,11 @@ for (int i = 3; i >= 0; i--) {
       NULL;
   }
   else if(f>a && f<=b){//goal is one base ahead
-      cout<< base[i].name<<" wants to run one base"<< endl;
+      cout<< base[i].name<<"  runs for the next base."<< endl;
       base[i].basedesired=1+i;
   }
   else{ //goal is 2 bases ahead
-      cout<< base[i].name<<" wants to run two bases"<< endl;
+      cout<< base[i].name<<" is running, he's really tearing up the field."<< endl;
       base[i].basedesired=2+i;
   };
 
@@ -348,15 +348,15 @@ void state::run()//makes players run bases
 for (int i = 3; i >= 0; i--) {
   
   x=base[i].basedesired;//each player intended base
-//  x=base[i].speed+i;//todo: update to incorperate basedesired attribute
-  if (x>=4){//todo: incorperate luck
+
+  if (x>=4){//making it home
       cout<< base[i].name << " makes it home!"<< endl;
       runs++;
       if (runs==2){
         defeat();
       };
       base[i]=p0;
-  }//todo: add condition where base intended is occupied
+  }
   else if (base[x].name!="Nobody"){//base occupied
       while (base[x].name!="Nobody"){//search backwards to find unoccupied base
           x--;
@@ -365,7 +365,7 @@ for (int i = 3; i >= 0; i--) {
   }
   else{
       base[x]=base[i];
-     // cout << base[i].name << " moves to base "<< x << endl;
+     //cout << base[i].name << " is SAFE!"<< endl;
       base[i]=p0;
       //cout << base[i].name << " is on base "<< i << " now"<< endl;
   }
@@ -400,15 +400,15 @@ field.pitchbat();
 //detect game completion
 switch (field.gameon){
   case 0:
-  cout<< "would you like to play again? 1-yes 0-no"<< endl;
+  cout<< "would you like to play again? 1-yes enter any number to quit."<< endl;
 
   if (cin >> field.gameon) {
             // Input was successfully read as an integer
-            cout << "You chose: "<< field.gameon << endl;//todo: add switch for 1 or 0
+            cout << "Let's begin again!" << endl;//todo: add switch for 1 or 0
         } 
       else {
             // Invalid input
-            cout << "Invalid input. Please enter an integer." << endl;
+            //cout << "Invalid input. Please enter an integer." << endl;
             cin.clear(); // Clear error state
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard remaining input
             cout << "Ah, nevermind."<< endl;//inform invalid input
