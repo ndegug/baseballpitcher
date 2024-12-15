@@ -162,15 +162,28 @@ void state::pitchbat()//select pitch and determine batter response
     int b; //ball/hit threshold detrmined by the matrix
     int c; //hit/home threshold detrmined by the matrix
     
+while (true){
+    //proclaim balls-strikes-outs
+    cout<< balls <<"-"<< strikes << "-" << outs << endl;
 
     //collect pitch choice
     cout << "Choose your pitch: 0-ground 1-fast 2-curve"<< endl;
     cin >> pit;
-
-    cout << "You chose: "<< pit << endl;//todo: use dictionary to print name of pitch
+      if (cin >> pit) {
+            // Input was successfully read as an integer
+            cout << "You chose: "<< pit << endl;//todo: use dictionary to print name of pitch
+        } 
+      else {
+            // Invalid input
+            cout << "Invalid input. Please enter an integer." << endl;
+            cin.clear(); // Clear error state
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard remaining input
+            cout << "Your pitcher didn't understand what you said and made a bad throw."<< endl;//inform invalid input
+            pit=0;
+        }
 
     //replace invalid answers with 0
-    switch (pit) {
+   /*switch (pit) {
   case 0:
     break;
   case 1:
@@ -180,7 +193,7 @@ void state::pitchbat()//select pitch and determine batter response
   default:
     cout << "Your pitcher didn't understand what you said and made a bad throw."<< endl;
     pit=0;
-}
+}*/
     a=batskillmat[pit][base[0].bat][0];//load thresholds
     b=batskillmat[pit][base[0].bat][1];
     c=batskillmat[pit][base[0].bat][2];
@@ -188,10 +201,9 @@ void state::pitchbat()//select pitch and determine batter response
 
     //determine fate and compare to probability matrix
     f=fate();
-  while (true){
+  
 
-    //declair balls-strikes-outs
-    cout<< balls <<"-"<< strikes << "-" << outs << endl;
+    
 
     //conditional statement determining strike/ball/hit/hr based on fate
     if (f<=a)
@@ -228,8 +240,8 @@ void state::pitchbat()//select pitch and determine batter response
     {//hit
       
       cout<< "It's a hit!"<< endl;
-      break; //break for next batter
       run();
+      break; //break for next batter
     }
     else
     {//home run
@@ -255,7 +267,8 @@ void state::inningchange()//reset game if tied or win game todo: move contents t
   }
   else{
      cout<< "You win!"<<endl;
-     exit(0);
+     gameon=0;
+     //exit(0);
   };
 };
 
@@ -263,7 +276,8 @@ void state::inningchange()//reset game if tied or win game todo: move contents t
 void state::defeat()
 {
     cout << "You lose"<<endl;
-    exit(0);
+    gameon=0;
+    //exit(0);
 };
 
 void state::loadBatter()
@@ -373,12 +387,9 @@ state field;//creates the field
 //int i;
 while (field.gameon==1) {//todo: change to a while loop to referance a "game on" int within the class instance
 field.loadBatter();
+field.readbases();
 field.pitchbat();
-//field.loadBatter();
-//field.readbases();
-//field.run();
-//field.loadBatter();
-//field.readbases();
+
 //field.walk();
 }
     return 0;
