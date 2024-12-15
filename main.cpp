@@ -171,29 +171,32 @@ while (true){
     cout << "Choose your pitch: 0-ground 1-fast 2-curve"<< endl;
       if (cin >> pit) {
             // Input was successfully read as an integer
-            cout << "You chose: "<< pit << endl;//todo: use dictionary to print name of pitch
+            //cout << "You chose: "<< pit << endl;//todo: use dictionary to print name of pitch
         } 
       else {
             // Invalid input
-            cout << "Invalid input. Please enter an integer." << endl;
+            //cout << "Invalid input. Please enter an integer." << endl;
             cin.clear(); // Clear error state
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard remaining input
-            cout << "Your pitcher didn't understand what you said and made a bad throw."<< endl;//inform invalid input
-            pit=0;
+            //cout << "Your pitcher didn't understand what you said and made a bad throw."<< endl;//inform invalid input
+            pit=3;
         }
 
     //replace invalid answers with 0
-   /*switch (pit) {
+   switch (pit) {
   case 0:
+  cout << "You chose: "<< pit << endl;//todo: use dictionary to print name of pitch
     break;
   case 1:
+  cout << "You chose: "<< pit << endl;
     break;
   case 2:
+  cout << "You chose: "<< pit << endl;
     break;
   default:
     cout << "Your pitcher didn't understand what you said and made a bad throw."<< endl;
     pit=0;
-}*/
+}
     a=batskillmat[pit][base[0].bat][0];//load thresholds
     b=batskillmat[pit][base[0].bat][1];
     c=batskillmat[pit][base[0].bat][2];
