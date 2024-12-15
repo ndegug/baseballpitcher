@@ -221,7 +221,7 @@ while (true){
         {
           //loadBatter();
         };
-       balls=0; strikes=0; //reset swing outcomes
+       //balls=0; strikes=0; //reset swing outcomes
        break; //break for next batter
       };
     }
@@ -232,7 +232,7 @@ while (true){
       if (balls==4)//if four balls, take the walk
       {
         walk();
-        balls=0; strikes=0; //reset swing outcomes
+        //balls=0; strikes=0; //reset swing outcomes
         break; //break for next batter
       }
     }
@@ -250,13 +250,18 @@ while (true){
             if (base[i].name != "Nobody")//add a run for every real player
             {
                 runs++;//add run
+                cout << base[i].name<<" runs home!"<<endl;
                 base[i]=p0;//empty base
             };
       
         };
+        if (runs >= 2){
+          defeat();
+        }
         break; //break for next batter
     };
   };
+  balls=0; strikes=0; //reset swing outcomes
 };
 void state::inningchange()//reset game if tied or win game todo: move contents to condition in method "outs"
 {
@@ -277,6 +282,8 @@ void state::defeat()
 {
     cout << "You lose"<<endl;
     gameon=0;
+    outs=0;//resets outs in case of new game
+    l=0; //resets lineup in case of new game
     //exit(0);
 };
 
@@ -390,7 +397,26 @@ field.loadBatter();
 field.readbases();
 field.pitchbat();
 
-//field.walk();
+//detect game completion
+switch (field.gameon){
+  case 0:
+  cout<< "would you like to play again? 1-yes 0-no"<< endl;
+
+  if (cin >> field.gameon) {
+            // Input was successfully read as an integer
+            cout << "You chose: "<< field.gameon << endl;//todo: use dictionary to print name of pitch
+        } 
+      else {
+            // Invalid input
+            cout << "Invalid input. Please enter an integer." << endl;
+            cin.clear(); // Clear error state
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard remaining input
+            cout << "Ah, nevermind."<< endl;//inform invalid input
+
+        }
+  default:
+  NULL;
+}
 }
     return 0;
 }
