@@ -2,12 +2,16 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <limits>
 
 using namespace std;
 class state// game state
 {
 public:
     
+    int gameon=1; //declairs the game to be on or off for the main while loop
+
+
     //scoreboard stats
     int outs=0;
     int balls=0;
@@ -48,9 +52,12 @@ player p9;
     void walk();//for taking the walk
     void inningchange(); //win or change inning
     void defeat(); //enemy runs enough to win
+    void pitchbat();//collects pitch and determines outcome of inidvidual swing
+    void out(); //send a player out and run innning change if 3
+
     
     //matrixes
-    int batskillmat[2][3][3] = 
+    int batskillmat[3][3][3] = 
     {//master array elements are chance thresholds: {strike/ball, ball/hit, hit/homerun} todo: add digit to chance for home run
         {// ground ball/bad throw
             {40, 80, 90}, //skill 0
@@ -61,8 +68,12 @@ player p9;
             {70, 80, 90}, //skill 0
             {30, 60, 90}, //skill 1
             {10, 50, 90} //skill 2
+        }, 
+        {//curve ball todo: update values
+            {70, 80, 90}, //skill 0
+            {30, 60, 90}, //skill 1
+            {10, 50, 90} //skill 2
         } 
-        //todo add curve ball
     };
     
     int runskillmat[4][2]=
@@ -139,40 +150,164 @@ lineup[0]=p1;lineup[1]=p2;lineup[2]=p3;lineup[3]=p4; //lineup
 lineup[4]=p5;lineup[5]=p6;lineup[6]=p7;lineup[7]=p8;lineup[8]=p9; 
 }
 int state::fate()
-{
+{//random number generator
     
      return (rand() % 100) + 1;
 };
-void state::inningchange()
+
+void state::pitchbat()//select pitch and determine batter response
+{
+    int pit;//pitch choice
+    int f; //fate
+    int a; //strike/ball threshold detrmined by the matrix
+    int b; //ball/hit threshold detrmined by the matrix
+    int c; //hit/home threshold detrmined by the matrix
+    
+while (true){
+    //proclaim balls-strikes-outs
+    cout<< balls <<"-"<< strikes << "-" << outs << endl;
+
+    //collect pitch choice
+    cout << "Choose your pitch: 0-ground 1-fast 2-curve"<< endl;
+      if (cin >> pit) {
+            // Input was successfully read as an integer
+            //cout << "You chose: "<< pit << endl;//todo: use dictionary to print name of pitch
+        } 
+      else {
+            // Invalid input
+            //cout << "Invalid input. Please enter an integer." << endl;
+            cin.clear(); // Clear error state
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard remaining input
+            //cout << "Your pitcher didn't understand what you said and made a bad throw."<< endl;//inform invalid input
+            pit=3;
+        }
+
+    //replace invalid answers with 0
+   switch (pit) {
+  case 0:
+  cout << "You chose: "<< pit << endl;//todo: use dictionary to print name of pitch
+    break;
+  case 1:
+  cout << "You chose: "<< pit << endl;
+    break;
+  case 2:
+  cout << "You chose: "<< pit << endl;
+    break;
+  default:
+    cout << "Your pitcher didn't understand what you said and made a bad throw."<< endl;
+    pit=0;
+}
+    a=batskillmat[pit][base[0].bat][0];//load thresholds
+    b=batskillmat[pit][base[0].bat][1];
+    c=batskillmat[pit][base[0].bat][2];
+
+
+    //determine fate and compare to probability matrix
+    f=fate();
+  
+
+    
+
+    //conditional statement determining strike/ball/hit/hr based on fate
+    if (f<=a)
+    {//strike
+    cout<< "Strike"<< endl;
+    strikes++;
+      if (strikes==3)//if three strikes, out todo: decide if this should be a switch
+      {
+       cout<< base[0].name<<" strikes out!"<< endl;
+       outs++;
+        if (outs==3){//check for three outs
+          inningchange();//should either end the game or reset the inning
+        }
+        else//todo: remove in not needed
+        {
+          //loadBatter();
+        };
+       //balls=0; strikes=0; //reset swing outcomes
+       break; //break for next batter
+      };
+    }
+    else if (f>a && f<=b)
+    {//ball
+      cout<< "ball"<< endl;
+      balls++;
+      if (balls==4)//if four balls, take the walk
+      {
+        walk();
+        //balls=0; strikes=0; //reset swing outcomes
+        break; //break for next batter
+      }
+    }
+    else if (f>b && f<=c)
+    {//hit
+      
+      cout<< "It's a hit!"<< endl;
+      run();
+      break; //break for next batter
+    }
+    else
+    {//home run
+        cout<< "It's gone!"<< endl;
+        for (int i = 2; i >= 0; i--) {
+            if (base[i].name != "Nobody")//add a run for every real player
+            {
+                runs++;//add run
+                cout << base[i].name<<" runs home!"<<endl;
+                base[i]=p0;//empty base
+            };
+      
+        };
+        if (runs >= 2){
+          defeat();
+        }
+        break; //break for next batter
+    };
+  };
+  balls=0; strikes=0; //reset swing outcomes
+};
+void state::inningchange()//reset game if tied or win game todo: move contents to condition in method "outs"
 {
   if (runs==1){//tie, reset game
-    cout<< "You tied, but they got another run next inning, new inning!"<<endl;
+    cout<< "You tied, but they got another run at the bottom of the inning, new inning!"<<endl;
     runs=0; outs=0; balls=0; strikes=0;//resets stats
+    base[0]=p0;base[1]=p0;base[2]=p0;base[3]=p0;//empty bases
   }
   else{
      cout<< "You win!"<<endl;
-     exit(0);
+     gameon=0;
+     //exit(0);
   };
 };
+
+
 void state::defeat()
 {
     cout << "You lose"<<endl;
-    exit(0);
+    gameon=0;
+    outs=0;//resets outs in case of new game
+    l=0; //resets lineup in case of new game
+    //exit(0);
 };
+
 void state::loadBatter()
 {//load batter
 //cout<<l<<endl;
 base[0]=lineup[l];
 l++;
+
+cout << base[0].name << " is up to bat."<< endl;
     if (l>8){//reset lineup index
     l=0;
     };
 };
+
 void state::readbases()
 {//displays the bases
     cout <<"Current field:"<< endl;
     cout << base[0].name<<", "<< base[1].name<<", "<< base[2].name<<", "<< base[3].name<< endl;
 };
+
 void state::catches()//determines who gets caught and eliminated from the field, if they don't get caught, set a basedesired
 {
     int f;
@@ -198,16 +333,17 @@ for (int i = 3; i >= 0; i--) {
       NULL;
   }
   else if(f>a && f<=b){//goal is one base ahead
-      cout<< base[i].name<<" wants to run one base"<< endl;
+      cout<< base[i].name<<"  runs for the next base."<< endl;
       base[i].basedesired=1+i;
   }
   else{ //goal is 2 bases ahead
-      cout<< base[i].name<<" wants to run two bases"<< endl;
+      cout<< base[i].name<<" is running, he's really tearing up the field."<< endl;
       base[i].basedesired=2+i;
   };
 
     };
 };
+
 void state::run()//makes players run bases
 {
     int x;
@@ -215,15 +351,15 @@ void state::run()//makes players run bases
 for (int i = 3; i >= 0; i--) {
   
   x=base[i].basedesired;//each player intended base
-//  x=base[i].speed+i;//todo: update to incorperate basedesired attribute
-  if (x>=4){//todo: incorperate luck
+
+  if (x>=4){//making it home
       cout<< base[i].name << " makes it home!"<< endl;
       runs++;
       if (runs==2){
         defeat();
       };
       base[i]=p0;
-  }//todo: add condition where base intended is occupied
+  }
   else if (base[x].name!="Nobody"){//base occupied
       while (base[x].name!="Nobody"){//search backwards to find unoccupied base
           x--;
@@ -232,7 +368,7 @@ for (int i = 3; i >= 0; i--) {
   }
   else{
       base[x]=base[i];
-     // cout << base[i].name << " moves to base "<< x << endl;
+     //cout << base[i].name << " is SAFE!"<< endl;
       base[i]=p0;
       //cout << base[i].name << " is on base "<< i << " now"<< endl;
   }
@@ -240,6 +376,7 @@ for (int i = 3; i >= 0; i--) {
 //base[0+speedtest]=base[0];//one instance of a player running bases todo: import for loop from old code
 base[0]=p0;
 };
+
 void state::walk()//make players take the walk
 {
     cout<<base[0].name << " takes the walk."<<endl;
@@ -257,14 +394,32 @@ void state::walk()//make players take the walk
 
 int main() {
 state field;//creates the field
-int i;
-for (i = 0; i <11; i++) {
+//int i;
+while (field.gameon==1) {//todo: change to a while loop to referance a "game on" int within the class instance
 field.loadBatter();
 field.readbases();
-field.run();
-field.loadBatter();
-field.readbases();
-field.walk();
+field.pitchbat();
+
+//detect game completion
+switch (field.gameon){
+  case 0:
+  cout<< "would you like to play again? 1-yes enter any number to quit."<< endl;
+
+  if (cin >> field.gameon) {
+            // Input was successfully read as an integer
+            cout << "Let's begin again!" << endl;//todo: add switch for 1 or 0
+        } 
+      else {
+            // Invalid input
+            //cout << "Invalid input. Please enter an integer." << endl;
+            cin.clear(); // Clear error state
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard remaining input
+            cout << "Ah, nevermind."<< endl;//inform invalid input
+
+        }
+  default:
+  NULL;
+}
 }
     return 0;
 }
