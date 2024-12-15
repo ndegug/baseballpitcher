@@ -404,7 +404,7 @@ switch (field.gameon){
 
   if (cin >> field.gameon) {
             // Input was successfully read as an integer
-            cout << "You chose: "<< field.gameon << endl;//todo: use dictionary to print name of pitch
+            cout << "You chose: "<< field.gameon << endl;//todo: add switch for 1 or 0
         } 
       else {
             // Invalid input
