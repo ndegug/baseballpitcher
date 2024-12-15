@@ -169,7 +169,6 @@ while (true){
 
     //collect pitch choice
     cout << "Choose your pitch: 0-ground 1-fast 2-curve"<< endl;
-    cin >> pit;
       if (cin >> pit) {
             // Input was successfully read as an integer
             cout << "You chose: "<< pit << endl;//todo: use dictionary to print name of pitch
