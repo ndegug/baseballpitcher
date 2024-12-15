@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <limits>
+#include <fstream>
 
 using namespace std;
 class state// game state
@@ -17,6 +18,8 @@ public:
     int balls=0;
     int strikes=0;
     int runs=0;
+
+    int l=0; //indexes lineup
     
   struct player {//defines properties of a player
     int speed;
@@ -41,7 +44,7 @@ player p9;
 
     player base[4];//4 bases, base[0] is "at bat"
     player lineup[9];//lineup with players in order todo: expand to fit full team
-    int l=0; //indexes lineup
+    
    // int b; //indexes bases
     state();        //Constructor
     void loadBatter(); //load and declair batter
@@ -60,19 +63,19 @@ player p9;
     int batskillmat[3][3][3] = 
     {//master array elements are chance thresholds: {strike/ball, ball/hit, hit/homerun} todo: add digit to chance for home run
         {// ground ball/bad throw
-            {40, 80, 90}, //skill 0
-            {10, 80, 90}, //skill 1
-            {10, 70, 90} //skill 2
+            {40, 80, 99}, //skill 0
+            {10, 80, 99}, //skill 1
+            {10, 70, 97} //skill 2
         },
         {//fast ball
-            {70, 80, 90}, //skill 0
-            {30, 60, 90}, //skill 1
-            {10, 50, 90} //skill 2
+            {70, 80, 99}, //skill 0
+            {30, 60, 97}, //skill 1
+            {10, 40, 95} //skill 2
         }, 
         {//curve ball todo: update values
-            {70, 80, 90}, //skill 0
-            {30, 60, 90}, //skill 1
-            {10, 50, 90} //skill 2
+            {70, 90, 99}, //skill 0
+            {30, 60, 99}, //skill 1
+            {10, 50, 97} //skill 2
         } 
     };
     
@@ -220,10 +223,6 @@ while (true){
         if (outs==3){//check for three outs
           inningchange();//should either end the game or reset the inning
         }
-        else//todo: remove in not needed
-        {
-          //loadBatter();
-        };
        //balls=0; strikes=0; //reset swing outcomes
        break; //break for next batter
       };
@@ -394,8 +393,25 @@ void state::walk()//make players take the walk
 
 int main() {
 state field;//creates the field
-//int i;
+
+cout<< "Welcome"<<endl;
+
+//ask for a save
+
+//
 while (field.gameon==1) {//todo: change to a while loop to referance a "game on" int within the class instance
+//autosave here
+ofstream file("baseball.txt");
+
+        if (file.is_open()) {
+           // file << field << endl;
+            file.close();
+            cout << "Data saved to " << "baseball.txt" << endl;
+        } else {
+            cerr << "No save found, new game initiated." << endl;
+        }
+
+
 field.loadBatter();
 field.readbases();
 field.pitchbat();
