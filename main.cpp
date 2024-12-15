@@ -8,6 +8,9 @@ class state// game state
 {
 public:
     
+    int gameon=1; //declairs the game to be on or off for the main while loop
+
+
     //scoreboard stats
     int outs=0;
     int balls=0;
@@ -158,6 +161,7 @@ void state::pitchbat()//select pitch and determine batter response
     int a; //strike/ball threshold detrmined by the matrix
     int b; //ball/hit threshold detrmined by the matrix
     int c; //hit/home threshold detrmined by the matrix
+    
 
     //collect pitch choice
     cout << "Choose your pitch: 0-ground 1-fast 2-curve"<< endl;
@@ -184,25 +188,30 @@ void state::pitchbat()//select pitch and determine batter response
 
     //determine fate and compare to probability matrix
     f=fate();
+  while (true){
+
+    //declair balls-strikes-outs
+    cout<< balls <<"-"<< strikes << "-" << outs << endl;
 
     //conditional statement determining strike/ball/hit/hr based on fate
     if (f<=a)
     {//strike
     cout<< "Strike"<< endl;
     strikes++;
-      if (strikes==3)//if three strikes, out
+      if (strikes==3)//if three strikes, out todo: decide if this should be a switch
       {
        cout<< base[0].name<<" strikes out!"<< endl;
        outs++;
         if (outs==3){//check for three outs
           inningchange();//should either end the game or reset the inning
         }
-        else
+        else//todo: remove in not needed
         {
-          loadBatter();
+          //loadBatter();
         };
        balls=0; strikes=0; //reset swing outcomes
-      }
+       break; //break for next batter
+      };
     }
     else if (f>a && f<=b)
     {//ball
@@ -212,11 +221,14 @@ void state::pitchbat()//select pitch and determine batter response
       {
         walk();
         balls=0; strikes=0; //reset swing outcomes
+        break; //break for next batter
       }
     }
     else if (f>b && f<=c)
     {//hit
+      
       cout<< "It's a hit!"<< endl;
+      break; //break for next batter
       run();
     }
     else
@@ -230,9 +242,9 @@ void state::pitchbat()//select pitch and determine batter response
             };
       
         };
-        
+        break; //break for next batter
     };
-
+  };
 };
 void state::inningchange()//reset game if tied or win game todo: move contents to condition in method "outs"
 {
@@ -259,6 +271,8 @@ void state::loadBatter()
 //cout<<l<<endl;
 base[0]=lineup[l];
 l++;
+
+cout << base[0].name << " is up to bat."<< endl;
     if (l>8){//reset lineup index
     l=0;
     };
@@ -356,8 +370,9 @@ void state::walk()//make players take the walk
 
 int main() {
 state field;//creates the field
-int i;
-for (i = 0; i <2; i++) {//todo: change to a while loop to referance a "game on" int within the class instance
+//int i;
+while (field.gameon==1) {//todo: change to a while loop to referance a "game on" int within the class instance
+field.loadBatter();
 field.pitchbat();
 //field.loadBatter();
 //field.readbases();
