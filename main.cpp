@@ -26,6 +26,7 @@ public:
     int bat;
     string name;
     int basedesired;
+    int id;
   };
   
 //declair players
@@ -57,6 +58,8 @@ player p9;
     void defeat(); //enemy runs enough to win
     void pitchbat();//collects pitch and determines outcome of inidvidual swing
     void out(); //send a player out and run innning change if 3
+    void autosave();
+    void loadgame();
 
     
     //matrixes
@@ -102,56 +105,113 @@ p0.name="Nobody";//null player for empty bases
 p0.speed=0;
 p0.bat=0;
 p0.basedesired=0;
+p0.id=0;
 
 p1.name="Elsbury";
 p1.speed=3;//todo: make this 3 when you know the running system works
 p1.bat=1;
 p1.basedesired=0;
+p1.id=1;
 
 p2.name = "Pedroia";
 p2.speed=2;
 p2.bat = 2;
 p2.basedesired=0;
+p2.id=2;
 
 p3.name="Ortiz";
 p3.speed=1;
 p3.bat=3;
 p3.basedesired=0;
+p3.id=3;
 
 p4.name= "Napoli";
 p4.speed=1;
 p4.bat=1;
 p4.basedesired=0;
+p4.id=4;
 
 p5.name = "Gomes";
 p5.speed=1;
 p5.bat=2;
 p5.basedesired=0;
+p5.id=5;
 	
 p6.name= "Victorino";
 p6.speed=2;
 p6.bat=2;
 p6.basedesired=0;
+p6.id=6;
 	
 p7.name= "Bogarts";
 p7.speed=2;
 p7.bat=1;
 p7.basedesired=0;
+p7.id=7;
 
 p8.name= "Drew";
 p8.speed=2;
 p8.bat=1;
 p8.basedesired=0;
+p8.id=8;
 
 p9.name= "Ross";
 p9.speed=1;
 p9.bat=2;
 p9.basedesired=0;
+p9.id=9;
 
 base[0]=p0;base[1]=p0; base[2]=p0; base[3]=p0;  //bases
 lineup[0]=p1;lineup[1]=p2;lineup[2]=p3;lineup[3]=p4; //lineup
 lineup[4]=p5;lineup[5]=p6;lineup[6]=p7;lineup[7]=p8;lineup[8]=p9; 
 }
+void state::autosave()
+{
+ofstream file("baseball.txt");
+
+        if (file.is_open()) {
+           file << outs << endl;
+           file << balls << endl;
+           file << strikes << endl;
+           file << runs << endl;
+           file << l << endl;
+           file << gameon << endl;
+           file << base[0].id << endl;
+           file << base[1].id << endl;
+           file << base[2].id << endl;
+           file << base[3].id << endl;
+            file.close();
+            
+          //  cout << "Data saved to baseball.txt" << endl;
+        } else {
+           // cerr << "Error opening a save file." << endl;
+        }
+        
+}
+void state::loadgame() {
+        ifstream file("baseball.txt");
+        
+        if (file.is_open()) {//todo: why aren't these variables recognized?
+            file >> outs;
+           file >> balls;
+           file >> strikes;
+           file >> runs;
+           file >> l;
+           file >> gameon;
+           file >> base[0].id;
+           file >> base[1].id;
+           file >> base[2].id;
+           file >> base[3].id;
+            file.close();
+            cout << "Data loaded from your file" << endl;
+        } else {
+            cerr << "Error opening your save." << endl;
+        }
+
+        for (int i=0; i<=3;i++){
+          base[i]=lineup[base[i].id];
+        }
+    }
 int state::fate()
 {//random number generator
     
@@ -401,17 +461,9 @@ cout<< "Welcome"<<endl;
 //
 while (field.gameon==1) {//todo: change to a while loop to referance a "game on" int within the class instance
 //autosave here
-ofstream file("baseball.txt");
-
-        if (file.is_open()) {
-           // file << field << endl;
-            file.close();
-            cout << "Data saved to " << "baseball.txt" << endl;
-        } else {
-            cerr << "No save found, new game initiated." << endl;
-        }
 
 
+//field.autosave();
 field.loadBatter();
 field.readbases();
 field.pitchbat();
